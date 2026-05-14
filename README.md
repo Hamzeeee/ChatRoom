@@ -8,4 +8,4 @@ Thank you for reading! :3
 
 - Use JDK 21
 - clone the repository and compile this code in any IDE (I used IntelliJ)
-- ```cmd telnet IP PORT```
+- In order to connect do: ```telnet IP PORT```
