@@ -23,13 +23,20 @@ public class Main {
 
     public static void main(String[] args) {
         instance = new Main();
+        instance.init();
+    }
+
+    /**
+     * Initializing all objects and threads after runtime to avoid static functions and creating new Main objects.
+     */
+    public void init() {
         ScheduledExecutorService checkUserAliveStatusThread = Executors.newSingleThreadScheduledExecutor();
-        checkUserAliveStatusThread.scheduleAtFixedRate(() -> instance.checkUserAliveStatus(instance.clients), 0, instance.PERIOD_FOR_SCHEDULER, TimeUnit.SECONDS);
+        checkUserAliveStatusThread.scheduleAtFixedRate(() -> checkUserAliveStatus(clients), 0, PERIOD_FOR_SCHEDULER, TimeUnit.SECONDS);
         try {
             ServerSocket serverSocket = new ServerSocket(getInstance().PORT);
             while (true) {
                 Socket client = serverSocket.accept();
-                instance.clientHandling.submit(new ClientHandler(client));
+                clientHandling.submit(new ClientHandler(client));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -45,7 +52,9 @@ public class Main {
      * A broadcasting message is sent to every client, except to user itself, to avoid a buggy UI
      *
      * @param message
-     * @param client
+     * @param sender
+     *
+     * @throws IOException
      */
     public void broadCastMessage(String message, Socket sender) {
         clients.forEach(client -> {
